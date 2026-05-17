@@ -19,7 +19,7 @@ import java.util.UUID;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID) // Tự động sinh mã UUID từ phía Java ứng dụng
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
@@ -42,12 +42,23 @@ public class UserEntity {
     private String role;
 
     @Column(name = "is_active")
-    private Boolean isActive; // Hibernate tự động map kiểu Boolean (true/false) thành kiểu BIT (1/0) trong SQL Server
+    private Boolean isActive; 
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    // --- Các trường Auditing (Lưu vết dữ liệu) ---
+    // =========================================================================
+    // CÁC TRƯỜNG PHỤC VỤ QUÊN MẬT KHẨU (OTP)
+    // =========================================================================
+    @Column(name = "reset_token", length = 6)
+    private String resetToken;
+
+    @Column(name = "token_expiration")
+    private LocalDateTime tokenExpiration;
+
+    // =========================================================================
+    // CÁC TRƯỜNG AUDITING (LƯU VẾT) VÀ SOFT DELETE (XÓA MỀM)
+    // =========================================================================
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -60,32 +71,28 @@ public class UserEntity {
     @Column(name = "updated_by")
     private UUID updatedBy;
 
-    // --- Các trường Soft Delete (Xóa mềm) ---
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
     @Column(name = "deleted_by")
     private UUID deletedBy;
 
-    // Thiết lập quan hệ 1-1 đảo chiều sang bảng Student
-    // cascade = CascadeType.ALL để khi thao tác (thêm/sửa/xóa) User thì Student cũng tự động thao tác theo
+    // Quan hệ 1-1 với Student
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private StudentEntity student;
 
-    // Tự động gán thời gian khởi tạo trước khi lưu xuống database
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
         if (this.isActive == null) {
-            this.isActive = true; // Mặc định tài khoản hoạt động
+            this.isActive = true;
         }
         if (this.role == null) {
-            this.role = "student"; // Mặc định quyền là sinh viên
+            this.role = "student";
         }
     }
 
-    // Tự động cập nhật thời gian sửa đổi trước khi cập nhật vào database
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

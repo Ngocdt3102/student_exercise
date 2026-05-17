@@ -5,10 +5,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class ResetPasswordRequestDTO {
+public class ChangePasswordRequestDTO {
 
-    @NotBlank(message = "Mã xác nhận (Token/OTP) không được để trống")
-    private String token;
+    @NotBlank(message = "Vui lòng nhập mật khẩu hiện tại")
+    private String oldPassword;
 
     @NotBlank(message = "Mật khẩu mới không được để trống")
     @Size(min = 6, message = "Mật khẩu mới phải có ít nhất 6 ký tự")
