@@ -54,24 +54,20 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // 1. Cho phép các cổng Frontend phổ biến kết nối (VD: 3000 cho React, 5173 cho Vue/Vite, 4200 cho Angular)
+        // Đã bổ sung thêm cổng 5500 của VS Code Live Server
         configuration.setAllowedOrigins(List.of(
             "http://localhost:3000", 
             "http://localhost:5173", 
-            "http://localhost:4200"
+            "http://localhost:4200",
+            "http://127.0.0.1:5500", // Cổng IP thực của Live Server
+            "http://localhost:5500"  // Cổng Localhost dự phòng của Live Server
         ));
         
-        // 2. Cho phép các phương thức HTTP
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        
-        // 3. CỰC KỲ QUAN TRỌNG: Cho phép Frontend gửi Header 'Authorization' chứa token JWT lên Server
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
-        
-        // 4. Cho phép gửi Cookie/Thông tin xác thực qua mạng
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Áp dụng cấu hình này cho toàn bộ đường dẫn API của hệ thống
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

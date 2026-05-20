@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị viên - Bảng điều khiển</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .section-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            margin-top: 10px;
+            color: var(--primary-color);
+        }
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .detail-value {
+            font-weight: 500;
+            color: var(--text-main);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">HỆ THỐNG QUẢN LÝ SINH VIÊN</a>
+            <div class="d-flex align-items-center">
+                <span class="text-white me-3" id="adminNameDisplay">Xin chào, Admin</span>
+                <button class="btn btn-warning btn-sm me-2 fw-bold" data-bs-toggle="modal" data-bs-target="#changeAdminPasswordModal">
+                    🔒 Đổi mật khẩu
+                </button>
+                <button class="btn btn-outline-light btn-sm" onclick="logout()">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container dashboard-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold text-primary">Danh sách Sinh viên</h4>
+            <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
+                + Thêm Sinh viên
+            </button>
+        </div>
+
+        <div id="mainAlert" class="alert d-none" role="alert"></div>
+
+        <div class="table-responsive table-custom">
+            <table class="table mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã SV</th>
+                        <th>Họ và Tên</th>
+                        <th>Email</th>
+                        <th>Lớp</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                    <tr><td colspan="6" class="text-center">Đang tải dữ liệu...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <nav class="mt-4">
+            <ul class="pagination justify-content-end" id="paginationControls"></ul>
+        </nav>
+    </div>
+
+    <div class="modal fade" id="viewStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-info">Hồ Sơ Chi Tiết Sinh Viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="section-title">Thông tin cá nhân</h6>
+                            <div class="row">
+                                <div class="col-6 detail-label">Mã Sinh Viên:</div><div class="col-6 detail-value text-primary" id="v_code"></div>
+                                <div class="col-6 detail-label">Họ và Tên:</div><div class="col-6 detail-value" id="v_name"></div>
+                                <div class="col-6 detail-label">Ngày sinh:</div><div class="col-6 detail-value" id="v_dob"></div>
+                                <div class="col-6 detail-label">Giới tính:</div><div class="col-6 detail-value" id="v_gender"></div>
+                                <div class="col-6 detail-label">CCCD:</div><div class="col-6 detail-value" id="v_nationalId"></div>
+                                <div class="col-6 detail-label">Email:</div><div class="col-6 detail-value" id="v_email"></div>
+                                <div class="col-6 detail-label">Số điện thoại:</div><div class="col-6 detail-value" id="v_phone"></div>
+                                <div class="col-6 detail-label">Quê quán:</div><div class="col-6 detail-value" id="v_hometown"></div>
+                                <div class="col-6 detail-label">Địa chỉ TT:</div><div class="col-6 detail-value" id="v_address"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="section-title">Thông tin học vụ</h6>
+                            <div class="row">
+                                <div class="col-6 detail-label">Lớp:</div><div class="col-6 detail-value" id="v_class"></div>
+                                <div class="col-6 detail-label">Khoa:</div><div class="col-6 detail-value" id="v_faculty"></div>
+                                <div class="col-6 detail-label">Chuyên ngành:</div><div class="col-6 detail-value" id="v_major"></div>
+                                <div class="col-6 detail-label">Khóa nhập học:</div><div class="col-6 detail-value" id="v_enrollYear"></div>
+                                <div class="col-6 detail-label">Năm TN (Dự kiến):</div><div class="col-6 detail-value" id="v_expGradYear"></div>
+                                <div class="col-6 detail-label">Năm TN (Thực tế):</div><div class="col-6 detail-value" id="v_actGradYear"></div>
+                                <div class="col-6 detail-label">Điểm GPA:</div><div class="col-6 detail-value text-danger fw-bold" id="v_gpa"></div>
+                                <div class="col-6 detail-label">Trạng thái:</div><div class="col-6 detail-value" id="v_status"></div>
+                                <div class="col-6 detail-label">Cập nhật lần cuối:</div><div class="col-6 detail-value" style="font-size: 13px;" id="v_updatedAt"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary">Thêm Sinh Viên Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Mã sinh viên <span class="text-danger">*</span></label>
+                                <input type="text" id="addCode" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Họ và Tên <span class="text-danger">*</span></label>
+                                <input type="text" id="addName" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ngày sinh <span class="text-danger">*</span></label>
+                                <input type="date" id="addDob" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Giới tính <span class="text-danger">*</span></label>
+                                <select id="addGender" class="form-control" required>
+                                    <option value="" disabled selected>Chọn giới tính</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số CCCD <span class="text-danger">*</span></label>
+                                <input type="text" id="addNationalId" class="form-control" required maxlength="12">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email <span class="text-danger">*</span></label>
+                                <input type="email" id="addEmail" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="text" id="addPhone" class="form-control" required placeholder="VD: 0987654321">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Quê quán <span class="text-danger">*</span></label>
+                                <input type="text" id="addHometown" class="form-control" required placeholder="VD: Nghệ An, Việt Nam">
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Địa chỉ thường trú</label>
+                                <input type="text" id="addAddress" class="form-control">
+                            </div>
+
+                            <div class="col-12"><hr></div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Lớp sinh hoạt</label>
+                                <input type="text" id="addClass" class="form-control" placeholder="VD: ST23C">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Khoa</label>
+                                <input type="text" id="addFaculty" class="form-control" placeholder="VD: Công nghệ Thông tin">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Chuyên ngành</label>
+                                <input type="text" id="addMajor" class="form-control">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Năm nhập học</label>
+                                <input type="number" id="addEnrollYear" class="form-control">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Năm TN dự kiến</label>
+                                <input type="number" id="addExpGradYear" class="form-control">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="handleAddStudent()">Lưu Sinh Viên</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editStudentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-primary">Cập Nhật Hồ Sơ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editUserId">
+                    <form id="editStudentForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Họ và Tên</label>
+                                <input type="text" id="e_name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" id="e_email" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ngày sinh</label>
+                                <input type="date" id="e_dob" class="form-control" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Số điện thoại</label>
+                                <input type="text" id="e_phone" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Quê quán</label>
+                                <input type="text" id="e_hometown" class="form-control">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Địa chỉ</label>
+                                <input type="text" id="e_address" class="form-control">
+                            </div>
+                            
+                            <div class="col-12"><hr></div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Lớp</label>
+                                <input type="text" id="e_class" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Khoa</label>
+                                <input type="text" id="e_faculty" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Chuyên ngành</label>
+                                <input type="text" id="e_major" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Điểm GPA</label>
+                                <input type="number" step="0.1" id="e_gpa" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Năm tốt nghiệp (Thực tế)</label>
+                                <input type="number" id="e_actGradYear" class="form-control">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Trạng thái khóa học</label>
+                                <select id="e_status" class="form-control">
+                                    <option value="Đang học">Đang học</option>
+                                    <option value="Đình chỉ">Đình chỉ</option>
+                                    <option value="Bảo lưu">Bảo lưu</option>
+                                    <option value="Đã tốt nghiệp">Đã tốt nghiệp</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary" onclick="handleEditStudent()">Lưu Cập Nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteStudentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-danger">Xác Nhận Xóa</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Bạn có chắc chắn muốn xóa sinh viên này khỏi hệ thống?</p>
+                    <input type="hidden" id="deleteUserId">
+                    <div class="mb-3">
+                        <label class="form-label">Lý do xóa (Bắt buộc)</label>
+                        <input type="text" id="deleteReason" class="form-control" placeholder="VD: Thôi học" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-danger" onclick="handleDeleteStudent()">Xác Nhận Xóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="changeAdminPasswordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold">🔒 Đổi Mật Khẩu Quản Trị Viên</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="changeAdminPasswordForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mật khẩu hiện tại</label>
+                            <input type="password" id="adminOldPassword" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Mật khẩu mới</label>
+                            <input type="password" id="adminNewPassword" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-primary">Xác nhận mật khẩu mới</label>
+                            <input type="password" id="adminConfirmNewPassword" class="form-control" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-warning fw-bold" onclick="handleAdminChangePassword()">Xác Nhận Đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        // ROUTE GUARD
+        const role = localStorage.getItem('role');
+        if (role !== 'admin') {
+            alert("Bạn không có quyền truy cập trang này!");
+            window.location.href = 'login.html';
+        }
+
+        const addModal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+        const editModal = new bootstrap.Modal(document.getElementById('editStudentModal'));
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
+        const viewModal = new bootstrap.Modal(document.getElementById('viewStudentModal'));
+
+        let currentPage = 0;
+        const pageSize = 10;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('adminNameDisplay').textContent = `Xin chào, ${localStorage.getItem('username')}`;
+            loadStudents(currentPage);
+        });
+
+        // 1. TẢI DANH SÁCH BẢNG
+        async function loadStudents(page) {
+            try {
+                const response = await fetchWithAuth(`/students?pageNo=${page}&pageSize=${pageSize}&sortBy=createdAt&sortDir=desc`);
+                renderTable(response.content);
+                renderPagination(response);
+                currentPage = page;
+            } catch (error) {
+                showMainAlert(error.message, 'danger');
+            }
+        }
+
+        function renderTable(students) {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+            if (!students || students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Không có dữ liệu sinh viên.</td></tr>';
+                return;
+            }
+            students.forEach(sv => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="fw-bold">${sv.studentCode || 'N/A'}</td>
+                    <td>${sv.fullName || 'Chưa cập nhật'}</td>
+                    <td>${sv.email}</td>
+                    <td>${sv.className || 'Chưa phân lớp'}</td>
+                    <td><span class="badge-active" style="background-color: ${sv.academicStatus==='Đình chỉ'?'#dc3545':(sv.academicStatus==='Bảo lưu'?'#ffc107':'#198754')}; color: ${sv.academicStatus==='Bảo lưu'?'black':'white'}">${sv.academicStatus || 'Đang học'}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-info action-btn" onclick="openViewModal('${sv.userId}')">Xem</button>
+                        <button class="btn btn-sm btn-outline-primary action-btn" onclick="openEditModal('${sv.userId}')">Sửa</button>
+                        <button class="btn btn-sm btn-outline-danger action-btn" onclick="openDeleteModal('${sv.userId}')">Xóa</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderPagination(pageData) {
+            const ul = document.getElementById('paginationControls');
+            ul.innerHTML = '';
+            const prevClass = pageData.pageNo === 0 ? 'disabled' : '';
+            ul.innerHTML += `<li class="page-item ${prevClass}"><a class="page-link" href="#" onclick="loadStudents(${pageData.pageNo - 1})">Trước</a></li>`;
+            for (let i = 0; i < pageData.totalPages; i++) {
+                const activeClass = i === pageData.pageNo ? 'active' : '';
+                ul.innerHTML += `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="loadStudents(${i})">${i + 1}</a></li>`;
+            }
+            const nextClass = pageData.isLast ? 'disabled' : '';
+            ul.innerHTML += `<li class="page-item ${nextClass}"><a class="page-link" href="#" onclick="loadStudents(${pageData.pageNo + 1})">Sau</a></li>`;
+        }
+
+        // 2. XEM CHI TIẾT
+        async function openViewModal(userId) {
+            try {
+                const sv = await fetchWithAuth(`/students/${userId}`);
+                document.getElementById('v_code').textContent = sv.studentCode || 'N/A';
+                document.getElementById('v_name').textContent = sv.fullName || 'N/A';
+                document.getElementById('v_dob').textContent = sv.dateOfBirth || 'N/A';
+                document.getElementById('v_gender').textContent = sv.gender || 'N/A';
+                document.getElementById('v_nationalId').textContent = sv.nationalId || 'N/A';
+                document.getElementById('v_email').textContent = sv.email || 'N/A';
+                document.getElementById('v_phone').textContent = sv.phoneNumber || 'N/A';
+                document.getElementById('v_hometown').textContent = sv.hometown || 'N/A';
+                document.getElementById('v_address').textContent = sv.address || 'N/A';
+
+                document.getElementById('v_class').textContent = sv.className || 'N/A';
+                document.getElementById('v_faculty').textContent = sv.faculty || 'N/A';
+                document.getElementById('v_major').textContent = sv.major || 'N/A';
+                document.getElementById('v_enrollYear').textContent = sv.enrollmentYear || 'N/A';
+                document.getElementById('v_expGradYear').textContent = sv.expectedGraduationYear || 'N/A';
+                document.getElementById('v_actGradYear').textContent = sv.actualGraduationYear || 'N/A';
+                document.getElementById('v_gpa').textContent = sv.cumulativeGpa !== null ? sv.cumulativeGpa : 'N/A';
+                
+                let statusColor = '#198754'; 
+                if (sv.academicStatus === 'Đình chỉ') statusColor = '#dc3545';
+                else if (sv.academicStatus === 'Bảo lưu') statusColor = '#ffc107';
+                document.getElementById('v_status').innerHTML = `<span class="badge-active" style="background-color: ${statusColor}; color: ${sv.academicStatus==='Bảo lưu'?'black':'white'}">${sv.academicStatus || 'Đang học'}</span>`;
+
+                let dateStr = 'Chưa rõ';
+                if (sv.studentUpdatedAt) {
+                    dateStr = new Date(sv.studentUpdatedAt).toLocaleString('vi-VN') + (sv.studentUpdatedByUsername ? ` (bởi ${sv.studentUpdatedByUsername})` : '');
+                }
+                document.getElementById('v_updatedAt').textContent = dateStr;
+
+                viewModal.show();
+            } catch (error) {
+                alert("Lỗi tải chi tiết: " + error.message);
+            }
+        }
+
+        // 3. THÊM SINH VIÊN
+        async function handleAddStudent() {
+            const dto = {
+                studentCode: document.getElementById('addCode').value,
+                fullName: document.getElementById('addName').value,
+                dateOfBirth: document.getElementById('addDob').value,
+                gender: document.getElementById('addGender').value,
+                nationalId: document.getElementById('addNationalId').value,
+                email: document.getElementById('addEmail').value,
+                phoneNumber: document.getElementById('addPhone').value || null,
+                hometown: document.getElementById('addHometown').value || null,
+                address: document.getElementById('addAddress').value || null,
+                className: document.getElementById('addClass').value || null,
+                faculty: document.getElementById('addFaculty').value || null,
+                major: document.getElementById('addMajor').value || null,
+                enrollmentYear: document.getElementById('addEnrollYear').value ? parseInt(document.getElementById('addEnrollYear').value) : null,
+                expectedGraduationYear: document.getElementById('addExpGradYear').value ? parseInt(document.getElementById('addExpGradYear').value) : null
+            };
+
+            try {
+                await fetchWithAuth('/students', {
+                    method: 'POST',
+                    body: JSON.stringify(dto)
+                });
+                addModal.hide();
+                document.getElementById('addStudentForm').reset();
+                showMainAlert('Thêm sinh viên thành công!', 'success');
+                loadStudents(0);
+            } catch (error) {
+                alert("Lỗi: " + error.message);
+            }
+        }
+
+        // 4. SỬA SINH VIÊN
+        async function openEditModal(userId) {
+            try {
+                const sv = await fetchWithAuth(`/students/${userId}`);
+                document.getElementById('editUserId').value = sv.userId;
+                
+                document.getElementById('e_name').value = sv.fullName || '';
+                document.getElementById('e_email').value = sv.email || '';
+                document.getElementById('e_dob').value = sv.dateOfBirth || '';
+                document.getElementById('e_phone').value = sv.phoneNumber || '';
+                document.getElementById('e_hometown').value = sv.hometown || '';
+                document.getElementById('e_address').value = sv.address || '';
+                
+                document.getElementById('e_class').value = sv.className || '';
+                document.getElementById('e_faculty').value = sv.faculty || '';
+                document.getElementById('e_major').value = sv.major || '';
+                document.getElementById('e_gpa').value = sv.cumulativeGpa !== null ? sv.cumulativeGpa : '';
+                document.getElementById('e_actGradYear').value = sv.actualGraduationYear || '';
+                document.getElementById('e_status').value = sv.academicStatus || 'Đang học';
+                
+                editModal.show();
+            } catch (error) {
+                alert("Không thể tải thông tin: " + error.message);
+            }
+        }
+
+        async function handleEditStudent() {
+            const userId = document.getElementById('editUserId').value;
+            const dto = {
+                fullName: document.getElementById('e_name').value,
+                email: document.getElementById('e_email').value,
+                dateOfBirth: document.getElementById('e_dob').value,
+                phoneNumber: document.getElementById('e_phone').value || null,
+                hometown: document.getElementById('e_hometown').value || null,
+                address: document.getElementById('e_address').value || null,
+                className: document.getElementById('e_class').value || null,
+                faculty: document.getElementById('e_faculty').value || null,
+                major: document.getElementById('e_major').value || null,
+                cumulativeGpa: document.getElementById('e_gpa').value ? parseFloat(document.getElementById('e_gpa').value) : null,
+                actualGraduationYear: document.getElementById('e_actGradYear').value ? parseInt(document.getElementById('e_actGradYear').value) : null,
+                academicStatus: document.getElementById('e_status').value
+            };
+
+            try {
+                await fetchWithAuth(`/students/admin/${userId}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(dto)
+                });
+                editModal.hide();
+                showMainAlert('Cập nhật hồ sơ thành công!', 'success');
+                loadStudents(currentPage);
+            } catch (error) {
+                alert("Lỗi: " + error.message);
+            }
+        }
+
+        // 5. XÓA & BẢO MẬT ADMIN
+        function openDeleteModal(userId) {
+            document.getElementById('deleteUserId').value = userId;
+            document.getElementById('deleteReason').value = '';
+            deleteModal.show();
+        }
+
+        async function handleDeleteStudent() {
+            const userId = document.getElementById('deleteUserId').value;
+            const reason = document.getElementById('deleteReason').value;
+            if(!reason) return alert("Vui lòng nhập lý do xóa!");
+
+            try {
+                await fetchWithAuth(`/students/${userId}`, {
+                    method: 'DELETE',
+                    body: JSON.stringify({ deletionReason: reason })
+                });
+                deleteModal.hide();
+                showMainAlert('Đã xóa mềm sinh viên thành công!', 'success');
+                loadStudents(currentPage);
+            } catch (error) {
+                alert("Lỗi: " + error.message);
+            }
+        }
+
+        async function handleAdminChangePassword() {
+            const dto = {
+                oldPassword: document.getElementById('adminOldPassword').value,
+                newPassword: document.getElementById('adminNewPassword').value,
+                confirmNewPassword: document.getElementById('adminConfirmNewPassword').value
+            };
+            if (dto.newPassword !== dto.confirmNewPassword) return alert("Mật khẩu xác nhận không trùng khớp!");
+
+            try {
+                await fetchWithAuth(`/auth/change-password/${localStorage.getItem('userId')}`, {
+                    method: 'PUT', body: JSON.stringify(dto)
+                });
+                alert("Đổi mật khẩu thành công! Hệ thống sẽ tự động đăng xuất để đảm bảo an toàn.");
+                logout();
+            } catch (error) {
+                alert("Lỗi đổi mật khẩu: " + error.message);
+            }
+        }
+
+        function showMainAlert(message, type) {
+            const alertBox = document.getElementById('mainAlert');
+            alertBox.className = `alert alert-${type}`;
+            alertBox.textContent = message;
+            alertBox.classList.remove('d-none');
+            setTimeout(() => alertBox.classList.add('d-none'), 5000);
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

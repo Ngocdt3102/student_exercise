@@ -1,0 +1,276 @@
+/* ==========================================================================
+   CSS DÙNG CHUNG CHO TOÀN BỘ HỆ THỐNG
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* Bảng màu chuẩn Enterprise */
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --bg-color: #f4f6f9;
+    --card-bg: #ffffff;
+    --text-main: #2b2f32;
+    --text-muted: #6c757d;
+    --border-color: #e2e8f0;
+    
+    /* Thông số bo góc và đổ bóng */
+    --border-radius: 12px;
+    --border-radius-sm: 8px;
+    --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --box-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+    
+    /* Hiệu ứng chuyển động */
+    --transition-speed: 0.3s;
+}
+
+/* Tùy chỉnh thanh cuộn (Scrollbar) cho toàn hệ thống */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1; 
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; 
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================================
+   1. AUTH LAYOUT (Login, Register, Forgot Password)
+   ========================================================================== */
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    /* Thêm background gradient nhẹ cho trang Auth */
+    background: linear-gradient(135deg, #f4f6f9 0%, #e0e7ff 100%);
+}
+
+.auth-card {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    border: none;
+    /* Hiệu ứng xuất hiện mượt mà */
+    animation: slideUpFade 0.5s ease-out forwards;
+}
+
+.auth-title {
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-color);
+    letter-spacing: -0.5px;
+}
+
+@keyframes slideUpFade {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   2. CUSTOM INPUTS & BUTTONS
+   ========================================================================== */
+.form-control {
+    border-radius: var(--border-radius-sm);
+    padding: 12px 15px;
+    border: 1.5px solid var(--border-color);
+    transition: all var(--transition-speed) ease;
+    font-size: 0.95rem;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+    border-color: var(--primary-color);
+}
+
+.readonly-field {
+    background-color: #f8f9fa !important;
+    cursor: not-allowed;
+    color: #495057;
+    font-weight: 500;
+    border-color: #e9ecef;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    padding: 12px;
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0); /* Hiệu ứng lún nút khi click */
+}
+
+/* ==========================================================================
+   3. DASHBOARD & BẢNG DỮ LIỆU
+   ========================================================================== */
+.navbar-custom {
+    background-color: var(--primary-color);
+    box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+}
+
+.dashboard-container {
+    padding: 30px 0;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.table-custom {
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    border: 1px solid var(--border-color);
+}
+
+.table-custom thead {
+    background-color: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table-custom th, .table-custom td {
+    padding: 16px 20px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table-custom tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-custom tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* Nút thao tác trong bảng */
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-right: 5px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.action-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Badges Trạng thái */
+.badge-active {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* ==========================================================================
+   4. MODAL & THÔNG TIN CHI TIẾT
+   ========================================================================== */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+    background-color: #f8fafc;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    padding: 15px 25px;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+/* Dành cho form xem chi tiết (View Modal) */
+.section-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    font-weight: 500;
+    color: var(--text-main);
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed var(--border-color);
+}
+
+/* ==========================================================================
+   5. SIDEBAR TABS (Dành cho Student Dashboard)
+   ========================================================================== */
+.nav-pills .nav-link {
+    color: var(--text-muted);
+    border-radius: var(--border-radius-sm);
+    margin-bottom: 8px;
+    padding: 12px 20px;
+    font-weight: 500;
+    transition: all var(--transition-speed);
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+    transform: translateX(5px); /* Hiệu ứng nhô ra nhẹ khi active */
+}
+
+.nav-pills .nav-link:hover:not(.active) {
+    background-color: #e2e8f0;
+    color: var(--text-main);
+}

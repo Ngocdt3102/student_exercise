@@ -153,6 +153,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void changePassword(UUID userId, ChangePasswordRequestDTO dto) {
+        // BƯỚC FIX CẢNH BÁO: Kiểm tra Null trước khi gọi Database
+        if (userId == null) {
+            throw new IllegalArgumentException("Mã người dùng (userId) không được để trống!");
+        }
+
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại!"));
 
